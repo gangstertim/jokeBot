@@ -126,7 +126,7 @@ def add_joke(jokeString):
             if tag not in key_store:
                 key_store[tag] = []
             key_store[tag].append(joke)
-            key_store['*'].append(joke)
+        key_store['*'].append(joke)
         return True
     return False
 
