@@ -41,13 +41,13 @@ laughs = ["AHAHAHAHHAHAHAHAHAHAAA",
           "hahahahahahha"]
 
 messages = ["I've got a real knee-slapper for you!",
-	    "You're in luck, I've got just the thing.",
-	    "Here's a good one:",
-	    "Here's one of my favorites:",
-	    "I heard this one at the bar last night:",
-	    "My grandfather used to tell this one all the time.  It was so embarassing!",
-	    "My wife always slaps me when I say this one:",
-	    "Try this bad-boy on for size:"]
+            "You're in luck, I've got just the thing.",
+            "Here's a good one:",
+            "Here's one of my favorites:",
+            "I heard this one at the bar last night:",
+            "My grandfather used to tell this one all the time.  It was so embarassing!",
+            "My wife always slaps me when I say this one:",
+            "Try this bad-boy on for size:"]
 restricted_users = ["jshaak"]
 
 key_store = {}
@@ -76,7 +76,7 @@ def hello_world():
 
         for w in word_array:
             if w == "jokebot":
-                if "add this joke about" in string:
+                if re.search(r'add this \w+ about', string):
                     if user.lower() in restricted_users: return post_joke("Sorry, %s, but I don't like your jokes." % user)
                     elif add_joke(orig): return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
                     else: return post_joke("you dun goofed bro")
