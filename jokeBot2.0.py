@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 db = StrictRedis("localhost", 6379)
 slack_url = "https://50onred.slack.com/services/hooks/incoming-webhook?token=YTQ9gokaGwwPe3nd8LSI1cv0"
-counter = int(db.get("counter"))
+app.counter = int(db.get("counter"))
 payload = {"channel": "#jokestest", "username": "JokeBot", "text": "", "icon_emoji": ":ghost:"}
 rimshot = {"channel": "#jokestest", "username": "RimshotBot", "text": "Ba-dum Tsh!", "icon_emoji": ":rimshot:"}
 theJoke = {"channel": "#jokestest", "username": "ThatsTheJokeBot", "text": "That's the joke!!!", "icon_emoji": ":sweep:"}
@@ -48,11 +48,11 @@ messages = ["I've got a real knee-slapper for you!",
 	    "My grandfather used to tell this one all the time.  It was so embarassing!",
 	    "My wife always slaps me when I say this one:",
 	    "Try this bad-boy on for size:"]
-
+restricted_users = ["jshaak"]
 
 key_store = {}
 key_store['*'] = []
-for i in xrange(counter):
+for i in xrange(app.counter):
     joke = json.loads(db.get("jokes:%d" % i))
     joke['count'] = COUNT
     key_store['*'].append(joke)
@@ -77,8 +77,7 @@ def hello_world():
         for w in word_array:
             if w == "jokebot":
                 if "add this joke about" in string:
-                    if user.lower() == "jshaak":
-			            return post_joke("Sorry, %s, but I don't like your jokes." % user)
+                    if user.lower() in restricted_users: return post_joke("Sorry, %s, but I don't like your jokes." % user)
 		            elif add_joke(orig): return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
                     else: return post_joke("you dun goofed bro")
 
@@ -123,8 +122,8 @@ def add_joke(jokeString):
     tags = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
     if tags:
         joke = {'joke': tags.group(2), 'tags': [s.strip() for s in re.split(r"\s*,\s*", tags.group(1))], 'count': COUNT}
-        db.set("jokes:%d" % counter, json.dumps(joke))
-        counter += 1
+        db.set("jokes:%d" % app.counter, json.dumps(joke))
+        app.counter += 1
         db.incr("counter")
         for tag in joke['tags']:
             if tag not in key_store:
