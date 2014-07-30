@@ -123,7 +123,7 @@ def choose_joke(list_of_jokes):
 def add_joke(jokeString):
     text = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
     joketext = text.group(2)
-    tags = [s.strip().lower() for s in re.split(r"\s*,\s*", tags.group(1))]
+    tags = [s.strip().lower() for s in re.split(r"\s*,\s*", text.group(1))]
     tags = [s for s in tags if s.isalpha() and len(s) >= 3 and s not in blacklist]
     if tags:
         joke = {'joke': joketext, 'tags': tags, 'count': COUNT}
