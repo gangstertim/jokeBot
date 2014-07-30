@@ -120,7 +120,7 @@ def choose_joke(list_of_jokes):
 def add_joke(jokeString):
     tags = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
     if tags:
-        joke = {'joke': tags.group(2), 'tags': [s.strip() for s in re.split(r"\s*,\s*", tags.group(1))], 'count': COUNT}
+        joke = {'joke': tags.group(2), 'tags': [s.strip().lower() for s in re.split(r"\s*,\s*", tags.group(1))], 'count': COUNT}
         db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
         for tag in joke['tags']:
             if tag not in key_store:
