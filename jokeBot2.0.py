@@ -51,6 +51,9 @@ messages = ["I've got a real knee-slapper for you!",
 
 restricted_users = ["jshaak"]
 
+with open('blacklist.txt') as f:
+    blacklist = frozenset(f.read().split('\n'))
+
 key_store = defaultdict(list)
 joke_keys = db.keys("jokes:*")
 for j in joke_keys:
@@ -118,9 +121,12 @@ def choose_joke(list_of_jokes):
     print "holy shit something smells of cabbage"
 
 def add_joke(jokeString):
-    tags = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
+    text = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
+    joketext = text.group(2)
+    tags = [s.strip().lower() for s in re.split(r"\s*,\s*", tags.group(1))]
+    tags = [s for s in tags if s.isalpha() and len(s) >= 3 and s not in blacklist]
     if tags:
-        joke = {'joke': tags.group(2), 'tags': [s.strip().lower() for s in re.split(r"\s*,\s*", tags.group(1))], 'count': COUNT}
+        joke = {'joke': joketext, 'tags': tags, 'count': COUNT}
         db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
         for tag in joke['tags']:
             if tag not in key_store:
