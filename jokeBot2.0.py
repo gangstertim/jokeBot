@@ -11,7 +11,7 @@ Options:
 
 '''
 
-import json, requests, re
+import json, requests, re, uuid
 from collections import defaultdict
 from flask import Flask, request
 from docopt import docopt
@@ -23,7 +23,6 @@ app = Flask(__name__)
 
 db = StrictRedis("localhost", 6379)
 slack_url = "https://50onred.slack.com/services/hooks/incoming-webhook?token=YTQ9gokaGwwPe3nd8LSI1cv0"
-app.counter = int(db.get("counter"))
 payload = {"channel": "#jokestest", "username": "JokeBot", "text": "", "icon_emoji": ":ghost:"}
 rimshot = {"channel": "#jokestest", "username": "RimshotBot", "text": "Ba-dum Tsh!", "icon_emoji": ":rimshot:"}
 theJoke = {"channel": "#jokestest", "username": "ThatsTheJokeBot", "text": "That's the joke!!!", "icon_emoji": ":sweep:"}
@@ -49,11 +48,13 @@ messages = ["I've got a real knee-slapper for you!",
             "My grandfather used to tell this one all the time.  It was so embarassing!",
             "My wife always slaps me when I say this one:",
             "Try this bad-boy on for size:"]
+
 restricted_users = ["jshaak"]
 
 key_store = defaultdict(list)
-for i in xrange(app.counter):
-    joke = json.loads(db.get("jokes:%d" % i))
+joke_list = db.keys("jokes:*")
+for j in joke_list:
+    joke = json.loads(j)
     joke['count'] = COUNT
     key_store['*'].append(joke)
     for tag in joke['tags']:
@@ -120,9 +121,7 @@ def add_joke(jokeString):
     tags = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
     if tags:
         joke = {'joke': tags.group(2), 'tags': [s.strip() for s in re.split(r"\s*,\s*", tags.group(1))], 'count': COUNT}
-        db.set("jokes:%d" % app.counter, json.dumps(joke))
-        app.counter += 1
-        db.incr("counter")
+        db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
         for tag in joke['tags']:
             if tag not in key_store:
                 key_store[tag] = []
