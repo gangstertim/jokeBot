@@ -87,7 +87,7 @@ def hello_world():
 
                 return post_joke(add_message("Did somebody ask for a joke?"))
             elif w in key_store:
-                return post_joke("Did somebady say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w])))
+                return post_joke("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w])))
     return ""
 
 def add_message(intro):
