@@ -11,7 +11,8 @@ Options:
 
 '''
 
-import atexit, json, requests, re
+import json, requests, re
+from collections import defaultdict
 from flask import Flask, request
 from docopt import docopt
 from schema import Use, Schema
@@ -50,15 +51,12 @@ messages = ["I've got a real knee-slapper for you!",
             "Try this bad-boy on for size:"]
 restricted_users = ["jshaak"]
 
-key_store = {}
-key_store['*'] = []
+key_store = defaultdict(list)
 for i in xrange(app.counter):
     joke = json.loads(db.get("jokes:%d" % i))
     joke['count'] = COUNT
     key_store['*'].append(joke)
     for tag in joke['tags']:
-        if tag not in key_store:
-            key_store[tag] = []
         key_store[tag].append(joke)
 
 @app.route('/', methods=['POST'])
