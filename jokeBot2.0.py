@@ -11,7 +11,8 @@ Options:
 
 '''
 
-import atexit, json, requests, re
+import json, requests, re, uuid
+from collections import defaultdict
 from flask import Flask, request
 from docopt import docopt
 from schema import Use, Schema
@@ -22,7 +23,6 @@ app = Flask(__name__)
 
 db = StrictRedis("localhost", 6379)
 slack_url = "https://50onred.slack.com/services/hooks/incoming-webhook?token=YTQ9gokaGwwPe3nd8LSI1cv0"
-app.counter = int(db.get("counter"))
 payload = {"channel": "#jokestest", "username": "JokeBot", "text": "", "icon_emoji": ":ghost:"}
 rimshot = {"channel": "#jokestest", "username": "RimshotBot", "text": "Ba-dum Tsh!", "icon_emoji": ":rimshot:"}
 theJoke = {"channel": "#jokestest", "username": "ThatsTheJokeBot", "text": "That's the joke!!!", "icon_emoji": ":sweep:"}
@@ -41,24 +41,23 @@ laughs = ["AHAHAHAHHAHAHAHAHAHAAA",
           "hahahahahahha"]
 
 messages = ["I've got a real knee-slapper for you!",
-	    "You're in luck, I've got just the thing.",
-	    "Here's a good one:",
-	    "Here's one of my favorites:",
-	    "I heard this one at the bar last night:",
-	    "My grandfather used to tell this one all the time.  It was so embarassing!",
-	    "My wife always slaps me when I say this one:",
-	    "Try this bad-boy on for size:"]
+            "You're in luck, I've got just the thing.",
+            "Here's a good one:",
+            "Here's one of my favorites:",
+            "I heard this one at the bar last night:",
+            "My grandfather used to tell this one all the time.  It was so embarassing!",
+            "My wife always slaps me when I say this one:",
+            "Try this bad-boy on for size:"]
+
 restricted_users = ["jshaak"]
 
-key_store = {}
-key_store['*'] = []
-for i in xrange(app.counter):
-    joke = json.loads(db.get("jokes:%d" % i))
+key_store = defaultdict(list)
+joke_keys = db.keys("jokes:*")
+for j in joke_keys:
+    joke = json.loads(db.get(j))
     joke['count'] = COUNT
     key_store['*'].append(joke)
     for tag in joke['tags']:
-        if tag not in key_store:
-            key_store[tag] = []
         key_store[tag].append(joke)
 
 @app.route('/', methods=['POST'])
@@ -76,7 +75,7 @@ def hello_world():
 
         for w in word_array:
             if w == "jokebot":
-                if "add this joke about" in string:
+                if re.search(r'add this \w+ about', string):
                     if user.lower() in restricted_users: return post_joke("Sorry, %s, but I don't like your jokes." % user)
                     elif add_joke(orig): return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
                     else: return post_joke("you dun goofed bro")
@@ -87,7 +86,7 @@ def hello_world():
 
                 return post_joke(add_message("Did somebody ask for a joke?"))
             elif w in key_store:
-                return post_joke("Did somebady say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w])))
+                return post_joke("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w])))
     return ""
 
 def add_message(intro):
@@ -121,10 +120,8 @@ def choose_joke(list_of_jokes):
 def add_joke(jokeString):
     tags = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
     if tags:
-        joke = {'joke': tags.group(2), 'tags': [s.strip() for s in re.split(r"\s*,\s*", tags.group(1))], 'count': COUNT}
-        db.set("jokes:%d" % app.counter, json.dumps(joke))
-        app.counter += 1
-        db.incr("counter")
+        joke = {'joke': tags.group(2), 'tags': [s.strip().lower() for s in re.split(r"\s*,\s*", tags.group(1))], 'count': COUNT}
+        db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
         for tag in joke['tags']:
             if tag not in key_store:
                 key_store[tag] = []
