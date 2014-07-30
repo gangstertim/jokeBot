@@ -52,9 +52,9 @@ messages = ["I've got a real knee-slapper for you!",
 restricted_users = ["jshaak"]
 
 key_store = defaultdict(list)
-joke_list = db.keys("jokes:*")
-for j in joke_list:
-    joke = json.loads(j)
+joke_keys = db.keys("jokes:*")
+for j in joke_keys:
+    joke = json.loads(db.get(j))
     joke['count'] = COUNT
     key_store['*'].append(joke)
     for tag in joke['tags']:
