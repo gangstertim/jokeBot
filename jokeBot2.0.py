@@ -49,7 +49,7 @@ messages = ["I've got a real knee-slapper for you!",
             "My wife always slaps me when I say this one:",
             "Try this bad-boy on for size:"]
 
-restricted_users = ["jshaak"]
+restricted_users = frozenset(["jshaak"])
 
 with open('blacklist.txt') as f:
     blacklist = frozenset(f.read().split('\n'))
@@ -69,10 +69,10 @@ def hello_world():
     string = request.form['text'].lower()
     user = request.form['user_name']
     if string.strip(".!?(:)") == "i don't get it" or string == "i dont get it":
-	return post_otherbot("theJoke")
+        return post_otherbot("theJoke")
     if user.lower() == "slackbot" and string != "ba-dum tsh!":
-	if not bool(getrandbits(2)):  #1 in 3 chance of rimshot
-	    return post_otherbot("rimshot")
+        if not bool(getrandbits(2)):  #1 in 3 chance of rimshot
+            return post_otherbot("rimshot")
     elif user.lower() != "slackbot":
         word_array = [w.strip("!#$%&()*,-.:;?@^`~<>") for w in string.split(" ")]
 
@@ -123,12 +123,12 @@ def add_joke(jokeString, user):
         return post_joke("Sorry, %s, but I don't like your jokes." % user)
     text = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
     joketext = text.group(2)
-    tags = [s.strip().lower() for s in re.split(r"\s*,\s*", text.group(1))]
-    tags_good = [s for s in tags if s.isalpha() and len(s) >= 3 and s not in blacklist]
-    tags_bad = [s for s in tags and not in tags_good]
+    tags = {s.strip().lower() for s in re.split(r"\s*,\s*", text.group(1))}
+    tags_good = {s for s in tags if s.isalpha() and len(s) >= 3 and s not in blacklist}
+    tags_bad = tags - tags_good
     if tags_good:
-        joke = {'joke': joketext, 'tags': tags_good, 'count': COUNT}
-       db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
+        joke = {'joke': joketext, 'tags': list(tags_good), 'count': COUNT}
+        db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
         for tag in joke['tags']:
             if tag not in key_store:
                 key_store[tag] = []
@@ -136,7 +136,7 @@ def add_joke(jokeString, user):
         key_store['*'].append(joke)
         if tags_bad:
             return post_joke("Joke added successfully!  The following tags were ignored: %s" % ", ".join(tags_bad))
-	    else: return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
+        else: return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
    return post_joke("you dun goofed bro")
 
 if __name__ == '__main__':
