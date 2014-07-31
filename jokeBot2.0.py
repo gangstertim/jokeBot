@@ -137,8 +137,10 @@ def add_joke(jokeString, user):
                        and s not in blacklist])
     tags_bad = tags - tags_good
     if tags_good:
-        joke = {'joke': joketext, 'tags': list(tags_good), 'count': COUNT}
-        db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
+        ident = "jokes:%s" % str(uuid.uuid4())
+        joke = {'id': ident, 'joke': joketext, 'tags': list(tags_good), 'count': COUNT}
+        db.set(ident, json.dumps(joke))
+        db.set("jokedata:%s" % ident, 0)
         for tag in joke['tags']:
             if tag not in key_store:
                 key_store[tag] = []
