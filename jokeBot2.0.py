@@ -128,7 +128,7 @@ def add_joke(jokeString, user):
     tags_bad = [s for s in tags and not in tags_good]
     if tags_good:
         joke = {'joke': joketext, 'tags': tags_good, 'count': COUNT}
-        db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
+       db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
         for tag in joke['tags']:
             if tag not in key_store:
                 key_store[tag] = []
@@ -136,8 +136,8 @@ def add_joke(jokeString, user):
         key_store['*'].append(joke)
         if tags_bad:
             return post_joke("Joke added successfully!  The following tags were ignored: %s" % ", ".join(tags_bad))
-	else: return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
-    return post_joke("you dun goofed bro")
+	    else: return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
+   return post_joke("you dun goofed bro")
 
 if __name__ == '__main__':
     args = Schema({'--host': Use(str), '--port': Use(int), '--debug': Use(bool)}).validate(docopt(__doc__))
