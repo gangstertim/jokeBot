@@ -19,7 +19,7 @@ from schema import Use, Schema
 from random import choice, getrandbits, uniform
 from redis import StrictRedis
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='_static')
 
 db = StrictRedis("localhost", 6379)
 slack_url = "https://50onred.slack.com/services/hooks/incoming-webhook?token=YTQ9gokaGwwPe3nd8LSI1cv0"
