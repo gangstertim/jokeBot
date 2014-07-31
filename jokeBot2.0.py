@@ -124,7 +124,8 @@ def add_joke(jokeString):
     text = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
     joketext = text.group(2)
     tags = [s.strip().lower() for s in re.split(r"\s*,\s*", text.group(1))]
-    tags = [s for s in tags if s.isalpha() and len(s) >= 3 and s not in blacklist]
+    tags_good = [s for s in tags if s.isalpha() and len(s) >= 3 and s not in blacklist]
+    tags_bad = [s for s in tags and not in tags_good]
     if tags:
         joke = {'joke': joketext, 'tags': tags, 'count': COUNT}
         db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
