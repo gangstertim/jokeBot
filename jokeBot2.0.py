@@ -79,13 +79,13 @@ def hello_world():
     if user.lower() == "slackbot" and string != "ba-dum tsh!":
         if not bool(getrandbits(2)):  #1 in 3 chance of rimshot
             return post_otherbot("rimshot")
-    elif user.lower() == "michaelmarshall":
-        return post_message(":fu:")
     elif user.lower() != "slackbot":
         word_array = [w.strip("!#$%&()*,-.:;?@^`~<>") for w in string.split(" ")]
 
         for w in word_array:
             if w == "jokebot":
+                if user.lower() == "michaelmarshall":
+                    return post_message(":fu:")
                 if re.search(r'add this \w+ about', string):
                     return add_joke(orig, user)
                 for w in word_array:
