@@ -123,8 +123,10 @@ def add_joke(jokeString, user):
         return post_joke("Sorry, %s, but I don't like your jokes." % user)
     text = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
     joketext = text.group(2)
-    tags = {s.strip().lower() for s in re.split(r"\s*,\s*", text.group(1))}
-    tags_good = {s for s in tags if s.isalpha() and len(s) >= 3 and s not in blacklist}
+    tags = set([s.strip().lower() for s in re.split(r"\s*,\s*", text.group(1))])
+    tags_good = set([s for s in tags if s.isalpha()
+                       and len(s) >= 3
+                       and s not in blacklist])
     tags_bad = tags - tags_good
     if tags_good:
         joke = {'joke': joketext, 'tags': list(tags_good), 'count': COUNT}
