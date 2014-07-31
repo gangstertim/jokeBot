@@ -1,8 +1,0 @@
-json:
-
-jokeID: id, joke*: count(*)
-
-
-
-
-, tag1: count(tag1), tag2: count(tag2)
