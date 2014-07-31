@@ -29,7 +29,7 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 d3.json(file, function(error, data) {
-  color.domain(d3.keys(
+  color.domain(d3.keys(["Jokes","*","Tag 1", "Tag 2", "Tag 3", "Tag 4"]);
 
   data.forEach(function(d) {
     var y0 = 0;
