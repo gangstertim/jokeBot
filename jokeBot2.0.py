@@ -84,8 +84,6 @@ def hello_world():
 
         for w in word_array:
             if w == "jokebot":
-                if user.lower() == "michaelmarshall":
-                    return post_message(":fu:")
                 if re.search(r'add this \w+ about', string):
                     return add_joke(orig, user)
                 for w in word_array:
