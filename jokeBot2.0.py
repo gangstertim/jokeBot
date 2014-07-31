@@ -91,14 +91,10 @@ def hello_world():
                 for w in word_array:
                     if re.search(r"hel+p+", w):
                         return post_message(help_message)
-                return post_message(add_laugh(add_message("Did somebody ask for a joke?")))
+                return post_message(add_laugh("Did somebody ask for a joke? %s  %s" % (choice(messages), choose_joke('*', key_store['*']))))
             elif w in key_store:
-                return post_message(add_laugh("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w]))))
+                return post_message(add_laugh("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(w, key_store[w]))))
     return ""
-
-def add_message(intro):
-    intro += " %s  %s" % (choice(messages), choose_joke(key_store['*']))
-    return intro
 
 def add_laugh(joke):
     if bool(getrandbits(1)): # Add laugh
@@ -114,7 +110,7 @@ def post_otherbot(type):
     if type == "theJoke":
         return json.dumps(theJoke)
 
-def choose_joke(list_of_jokes):
+def choose_joke(tag, list_of_jokes):
     total = sum(i['count'] for i in list_of_jokes)
     r = uniform(0, total)
     upto = 0
@@ -122,6 +118,8 @@ def choose_joke(list_of_jokes):
         upto += joke['count']
         if upto >= r:
             joke['count'] /= 1.653      #scientifically proven to be the funniest ratio
+            joke['log_data'][tag] += 1
+            db.set(joke['id'], json.dumps(joke))
             return joke['joke']
 
     print "holy shit something smells of cabbage"
@@ -137,8 +135,15 @@ def add_joke(jokeString, user):
                        and s not in blacklist])
     tags_bad = tags - tags_good
     if tags_good:
-        joke = {'joke': joketext, 'tags': list(tags_good), 'count': COUNT}
-        db.set("jokes:%s" % str(uuid.uuid4()), json.dumps(joke))
+        ident = "jokes:%s" % str(uuid.uuid4())
+        joke = {
+            'id': ident,
+            'joke': joketext,
+            'tags': list(tags_good),
+            'count': COUNT,
+            'log_data': dict([(t, 0) for t in tags_good] + [('*', 0)])
+        }
+        db.set(ident, json.dumps(joke))
         for tag in joke['tags']:
             if tag not in key_store:
                 key_store[tag] = []
