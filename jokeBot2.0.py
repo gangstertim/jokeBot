@@ -139,7 +139,7 @@ def add_joke(jokeString, user):
         if tags_bad:
             return post_joke("Joke added successfully!  The following tags were ignored: %s" % ", ".join(tags_bad))
         else: return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
-   return post_joke("you dun goofed bro")
+    return post_joke("you dun goofed bro")
 
 if __name__ == '__main__':
     args = Schema({'--host': Use(str), '--port': Use(int), '--debug': Use(bool)}).validate(docopt(__doc__))
