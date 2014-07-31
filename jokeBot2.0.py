@@ -91,7 +91,7 @@ def hello_world():
                         return post_message(help_message)
                 return post_message(add_laugh("Did somebody ask for a joke? %s  %s" % (choice(messages), choose_joke('*', key_store['*']))))
             elif w in key_store:
-                return post_message(add_laugh("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(w, key_store[w]))))
+                return post_message(add_laugh("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(w, key_store[w], user.lower()))))
     return ""
 
 def add_laugh(joke):
@@ -108,7 +108,9 @@ def post_otherbot(type):
     if type == "theJoke":
         return json.dumps(theJoke)
 
-def choose_joke(tag, list_of_jokes):
+def choose_joke(tag, list_of_jokes, user=None):
+    if user == "michaelmarshall" and tag == 'drug':
+        return "No more drugs for you"
     total = sum(i['count'] for i in list_of_jokes)
     r = uniform(0, total)
     upto = 0
