@@ -158,7 +158,7 @@ def add_joke(jokeString, user):
 
 @app.route('/plotdata', methods=['GET', 'POST'])
 def plot():
-    return render_template('plotBot/plot.html')
+    return render_template('plot.html')
 
 if __name__ == '__main__':
     args = Schema({'--host': Use(str), '--port': Use(int), '--debug': Use(bool)}).validate(docopt(__doc__))
