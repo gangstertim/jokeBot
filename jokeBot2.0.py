@@ -27,22 +27,30 @@ def payload(text): return {"channel": "#jokestest", "username": "JokeBot", "text
 rimshot = {"channel": "#jokestest", "username": "RimshotBot", "text": "Ba-dum Tsh!", "icon_emoji": ":rimshot:"}
 theJoke = {"channel": "#jokestest", "username": "ThatsTheJokeBot", "text": "That's the joke!!!", "icon_emoji": ":sweep:"}
 COUNT = 50*10**6
+help_message = "*Hi!  I'm Jokebot!*  To hear a joke, just say my name.  I'll also pipe in if I know jokes about the things you're talking about. If you'd like to tell me a joke, I'll add it to my collection: just say `jokebot, add this joke about TAG1, TAG2, TAG3: JOKE`.  You may add as many tags as you like!  Bye now! HOOOHOOHEEE HEE HAA HAAA lololololololololol"
+
+
 laughs = ["AHAHAHAHHAHAHAHAHAHAAA",
           "ROFLCOPTAH   <--jokebot is from Boston",
           "OOOHEEE HAAAA HAAA HEEE HEE HOO",
           "tee hee hee",
+          "Literally rolling on the floor laughing.  Literally.",
           "guffaw guffaw",
           "*chortle chortle*",
           "HAHAHAHAH",
+          "They should call me Mr. Funny because that was GREAT!",
           "lol, good one, amirite? >__< :D",
           "Oh ho ho ho ho!",
           "*emits filthy snicker*",
+          "lollersk8zz brooo",
           "lololololololololol",
           "hahahahahahha"]
 
 messages = ["I've got a real knee-slapper for you!",
             "You're in luck, I've got just the thing.",
             "Here's a good one:",
+            "I read this one on a candy wrapper!",
+            "You better get your suture kit, because this one is so funny you'll be in stitches!",
             "Here's one of my favorites:",
             "I heard this one at the bar last night:",
             "My grandfather used to tell this one all the time.  It was so embarassing!",
@@ -80,11 +88,9 @@ def hello_world():
             if w == "jokebot":
                 if re.search(r'add this \w+ about', string):
                     return add_joke(orig, user)
-
                 for w in word_array:
                     if re.search(r"hel+p+", w):
-                        return post_message("""*Hi!  I'm Jokebot!*  To hear a joke, just say my name.  I'll also pipe in if I know jokes about the things you're talking about. If you'd like to tell me a joke, I'll add it to my collection: just say `jokebot, add this joke about TAG1, TAG2, TAG3: JOKE`.  You may add as many tags as you like!  Bye now! HOOOHOOHEEE HEE HAA HAAA lololololololololol""")
-
+                        return post_message(help_message)
                 return post_message(add_laugh(add_message("Did somebody ask for a joke?")))
             elif w in key_store:
                 return post_message(add_laugh("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w]))))
