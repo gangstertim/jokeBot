@@ -29,7 +29,7 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 d3.json(file, function(error, data) {
-  color.domain(d3.keys(data[0]).filter(function(key) { return key !== "State"; }));
+  color.domain(d3.keys(
 
   data.forEach(function(d) {
     var y0 = 0;
@@ -57,11 +57,11 @@ d3.json(file, function(error, data) {
       .style("text-anchor", "end")
       .text("Population");
 
-  var state = svg.selectAll(".state")
+  var state = svg.selectAll(".joke")
       .data(data)
     .enter().append("g")
       .attr("class", "g")
-      .attr("transform", function(d) { return "translate(" + x(d.State) + ",0)"; });
+      .attr("transform", function(d) { return "translate(" + x(d.jokeId) + ",0)"; });
 
   state.selectAll("rect")
       .data(function(d) { return d.ages; })
