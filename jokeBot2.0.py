@@ -79,6 +79,8 @@ def hello_world():
     if user.lower() == "slackbot" and string != "ba-dum tsh!":
         if not bool(getrandbits(2)):  #1 in 3 chance of rimshot
             return post_otherbot("rimshot")
+    elif user.lower() == "michaelmarshall":
+        return post_message(":fu:")
     elif user.lower() != "slackbot":
         word_array = [w.strip("!#$%&()*,-.:;?@^`~<>") for w in string.split(" ")]
 
@@ -109,8 +111,6 @@ def post_otherbot(type):
         return json.dumps(theJoke)
 
 def choose_joke(tag, list_of_jokes, user=None):
-    if user == "michaelmarshall" and tag == 'drug':
-        return "No more drugs for you"
     total = sum(i['count'] for i in list_of_jokes)
     r = uniform(0, total)
     upto = 0
