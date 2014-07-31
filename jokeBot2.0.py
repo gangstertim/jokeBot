@@ -13,7 +13,7 @@ Options:
 
 import json, requests, re, uuid
 from collections import defaultdict
-from flask import Flask, request
+from flask import Flask, request, render_template
 from docopt import docopt
 from schema import Use, Schema
 from random import choice, getrandbits, uniform
@@ -154,6 +154,11 @@ def add_joke(jokeString, user):
         else:
             return post_message("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
     return post_message("you dun goofed bro")
+
+
+@app.route('/plotdata', methods=['GET', 'POST'])
+def plot():
+    return render_template('plotBot/plot.html')
 
 if __name__ == '__main__':
     args = Schema({'--host': Use(str), '--port': Use(int), '--debug': Use(bool)}).validate(docopt(__doc__))
