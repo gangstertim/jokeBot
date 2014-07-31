@@ -23,7 +23,7 @@ app = Flask(__name__)
 
 db = StrictRedis("localhost", 6379)
 slack_url = "https://50onred.slack.com/services/hooks/incoming-webhook?token=YTQ9gokaGwwPe3nd8LSI1cv0"
-payload = {"channel": "#jokestest", "username": "JokeBot", "text": "", "icon_emoji": ":ghost:"}
+def payload(text): return {"channel": "#jokestest", "username": "JokeBot", "text": text, "icon_emoji": ":ghost:"}
 rimshot = {"channel": "#jokestest", "username": "RimshotBot", "text": "Ba-dum Tsh!", "icon_emoji": ":rimshot:"}
 theJoke = {"channel": "#jokestest", "username": "ThatsTheJokeBot", "text": "That's the joke!!!", "icon_emoji": ":sweep:"}
 COUNT = 50*10**6
@@ -65,9 +65,9 @@ for j in joke_keys:
 
 @app.route('/', methods=['POST'])
 def hello_world():
-    orig = request.form['text']
+    orig   = request.form['text']
     string = request.form['text'].lower()
-    user = request.form['user_name']
+    user   = request.form['user_name']
     if string.strip(".!?(:)") == "i don't get it" or string == "i dont get it":
         return post_otherbot("theJoke")
     if user.lower() == "slackbot" and string != "ba-dum tsh!":
@@ -83,22 +83,24 @@ def hello_world():
 
                 for w in word_array:
                     if re.search(r"hel+p+", w):
-                        return post_joke("""*Hi!  I'm Jokebot!*  To hear a joke, just say my name.  I'll also pipe in if I know jokes about the things you're talking about. If you'd like to tell me a joke, I'll add it to my collection: just say `jokebot, add this joke about TAG1, TAG2, TAG3: JOKE`.  You may add as many tags as you like!  Bye now! HOOOHOOHEEE HEE HAA HAAA lololololololololol""")
+                        return post_message("""*Hi!  I'm Jokebot!*  To hear a joke, just say my name.  I'll also pipe in if I know jokes about the things you're talking about. If you'd like to tell me a joke, I'll add it to my collection: just say `jokebot, add this joke about TAG1, TAG2, TAG3: JOKE`.  You may add as many tags as you like!  Bye now! HOOOHOOHEEE HEE HAA HAAA lololololololololol""")
 
-                return post_joke(add_message("Did somebody ask for a joke?"))
+                return post_message(add_laugh(add_message("Did somebody ask for a joke?")))
             elif w in key_store:
-                return post_joke("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w])))
+                return post_message(add_laugh("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w]))))
     return ""
 
 def add_message(intro):
     intro += " %s  %s" % (choice(messages), choose_joke(key_store['*']))
     return intro
 
-def post_joke(joke):
-    payload['text'] = joke
+def add_laugh(joke):
     if bool(getrandbits(1)): # Add laugh
-        payload['text'] += "\n%s" % choice(laughs)
-    return json.dumps(payload)
+        joke += "\n%s" % choice(laughs)
+    return joke
+
+def post_message(message):
+    return json.dumps(payload(message))
 
 def post_otherbot(type):
     if type == "rimshot":
@@ -120,10 +122,10 @@ def choose_joke(list_of_jokes):
 
 def add_joke(jokeString, user):
     if user.lower() in restricted_users:
-        return post_joke("Sorry, %s, but I don't like your jokes." % user)
-    text = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
-    joketext = text.group(2)
-    tags = set([s.strip().lower() for s in re.split(r"\s*,\s*", text.group(1))])
+        return post_message("Sorry, %s, but I don't like your jokes." % user)
+    text      = re.search(r"about(.*?):(.*)", jokeString, flags=(re.S | re.I))
+    joketext  = text.group(2)
+    tags      = set([s.strip().lower() for s in re.split(r"\s*,\s*", text.group(1))])
     tags_good = set([s for s in tags if s.isalpha()
                        and len(s) >= 3
                        and s not in blacklist])
@@ -137,13 +139,11 @@ def add_joke(jokeString, user):
             key_store[tag].append(joke)
         key_store['*'].append(joke)
         if tags_bad:
-            return post_joke("Joke added successfully!  The following tags were ignored: %s" % ", ".join(tags_bad))
-        else: return post_joke("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
-    return post_joke("you dun goofed bro")
+            return post_message("Joke added successfully!  The following tags were ignored: %s" % ", ".join(tags_bad))
+        else:
+            return post_message("Joke added successfully!  that was sooooooooooo funnnnnnyyyyyyy")
+    return post_message("you dun goofed bro")
 
 if __name__ == '__main__':
     args = Schema({'--host': Use(str), '--port': Use(int), '--debug': Use(bool)}).validate(docopt(__doc__))
     app.run(host=args['--host'], port=args['--port'], debug=args['--debug'])
-
-
-
