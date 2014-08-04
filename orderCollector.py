@@ -18,16 +18,19 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
+prefix = ''
+
 def payload(text): return {"channel": "#seamless-thursday", "username": "SeamlessBot", "text": text, "icon_emoji": ":seamless:"}
 
 @app.route('/', methods=['POST'])
-def hello_world():
+def save_order():
     post = request.form['text']
     user = request.form['user_name']
     # Find restaurant name
-    # Save order
-    # reply with confirmation
+    # Save order (only if prefix matches)
+    # reply with confirmation (with username in it)
     # or with error message if restaurant name can't be found
+    # Or have some contextual ignore
 
     return post_message("")
 
