@@ -21,7 +21,6 @@ from redis import StrictRedis
 
 app          = Flask(__name__, static_folder='_static')
 db           = StrictRedis("localhost", 6379)
-slack_url    = "https://50onred.slack.com/services/hooks/incoming-webhook?token=YTQ9gokaGwwPe3nd8LSI1cv0"
 payload      = lambda text: {"channel": "#jokestest", "username": "JokeBot", "text": text, "icon_emoji": ":ghost:"}
 rimshot      = {"channel": "#jokestest", "username": "RimshotBot", "text": "Ba-dum Tsh!", "icon_emoji": ":rimshot:"}
 theJoke      = {"channel": "#jokestest", "username": "ThatsTheJokeBot", "text": "That's the joke!!!", "icon_emoji": ":thatsthejoke:"}

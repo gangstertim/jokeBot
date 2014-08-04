@@ -19,7 +19,6 @@ from random import choice, getrandbits, uniform
 
 app = Flask(__name__)
 
-slack_url = "https://50onred.slack.com/services/hooks/incoming-webhook?token=YTQ9gokaGwwPe3nd8LSI1cv0"
 jokeCount = 0
 payload = {"channel": "#jokestest", "username": "JokeBot", "text": "", "icon_emoji": ":ghost:"}
 rimshot = {"channel": "#jokestest", "username": "RimshotBot", "text": "Ba-dum Tsh!", "icon_emoji": ":rimshot:"}

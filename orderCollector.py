@@ -11,24 +11,25 @@ Options:
 
 '''
 
-import json, requests, re, uuid
-from flask import Flask, request
+import re, json
 from docopt import docopt
 from schema import Use, Schema
+from flask import Flask, request
 
 app = Flask(__name__)
 
-slack_url = "https://50onred.slack.com/services/hooks/incoming-webhook?token=YTQ9gokaGwwPe3nd8LSI1cv0"
-def payload(text): return {"channel": "#jokestest", "username": "JokeBot", "text": text, "icon_emoji": ":ghost:"}
+def payload(text): return {"channel": "#seamless-thursday", "username": "SeamlessBot", "text": text, "icon_emoji": ":seamless:"}
 
 @app.route('/', methods=['POST'])
 def hello_world():
-    orig   = request.form['text']
-    string = request.form['text'].lower()
-    user   = request.form['user_name']
+    post = request.form['text']
+    user = request.form['user_name']
+    # Find restaurant name
+    # Save order
+    # reply with confirmation
+    # or with error message if restaurant name can't be found
 
-
-    return post_message(("Did somebody say *%s*? Here's a joke about it! %s" % (w, choose_joke(key_store[w]))))
+    return post_message("")
 
 def post_message(message):
     return json.dumps(payload(message))
